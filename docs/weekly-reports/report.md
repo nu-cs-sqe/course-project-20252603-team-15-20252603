@@ -5,7 +5,7 @@
 3. [80% done] Person: Task (Links to PR)
 
 
-# Week X (XX/XX/2026-XX/XX/2026) TEMPLATE (You can change the format to whatever the team likes better)
+# Week 8 (05/18/2026-05/25/2026)
 **Planning and Progress Tracking**:
 1. [done] Person: Task (Links to PR)
 2. [not started] Person: Task (Links to PR)
