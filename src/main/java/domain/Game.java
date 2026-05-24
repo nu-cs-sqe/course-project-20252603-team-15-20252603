@@ -1,9 +1,13 @@
 package domain;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Game {
+public final class Game {
+
+    private static final int MIN_PLAYERS = 3;
+    private static final int MAX_PLAYERS = 4;
 
     private final int numberOfPlayers;
     private final int firstPlayerIndex;
@@ -18,9 +22,10 @@ public class Game {
 
     @SuppressWarnings("unchecked")
     public Game(int numberOfPlayers, DiceRoller diceRoller) {
-        if (numberOfPlayers < 3 || numberOfPlayers > 4) {
+        if (numberOfPlayers < MIN_PLAYERS || numberOfPlayers > MAX_PLAYERS) {
             throw new IllegalArgumentException(
-                    "Player count must be 3 or 4");
+                    "Player count must be between "
+                            + MIN_PLAYERS + " and " + MAX_PLAYERS);
         }
         this.numberOfPlayers = numberOfPlayers;
         this.firstPlayerIndex = determineFirstPlayer(diceRoller);
@@ -137,14 +142,15 @@ public class Game {
     }
 
     public int[] getTurnOrder() {
-        return turnOrder;
+        return Arrays.copyOf(turnOrder, turnOrder.length);
     }
 
     public int[] getSettlementsPerPlayer() {
-        return settlementsPerPlayer;
+        return Arrays.copyOf(settlementsPerPlayer,
+                settlementsPerPlayer.length);
     }
 
     public int[] getRoadsPerPlayer() {
-        return roadsPerPlayer;
+        return Arrays.copyOf(roadsPerPlayer, roadsPerPlayer.length);
     }
 }
