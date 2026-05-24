@@ -1,5 +1,8 @@
 package domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Game {
 
     private final int numberOfPlayers;
@@ -7,11 +10,13 @@ public class Game {
     private final int[] turnOrder;
     private final int[] settlementsPerPlayer;
     private final int[] roadsPerPlayer;
+    private final Map<String, Integer>[] playerResources;
 
     public Game(int numberOfPlayers) {
         this(numberOfPlayers, new RandomDiceRoller());
     }
 
+    @SuppressWarnings("unchecked")
     public Game(int numberOfPlayers, DiceRoller diceRoller) {
         if (numberOfPlayers < 3 || numberOfPlayers > 4) {
             throw new IllegalArgumentException(
@@ -22,6 +27,10 @@ public class Game {
         this.turnOrder = buildTurnOrder();
         this.settlementsPerPlayer = new int[numberOfPlayers];
         this.roadsPerPlayer = new int[numberOfPlayers];
+        this.playerResources = new HashMap[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            playerResources[i] = new HashMap<>();
+        }
     }
 
     private int determineFirstPlayer(DiceRoller diceRoller) {
@@ -76,11 +85,22 @@ public class Game {
     }
 
     public void executeSetupRoundTwo() {
+        executeSetupRoundTwo(null);
+    }
+
+    public void executeSetupRoundTwo(String[][] resources) {
         int[] reverseOrder = getRoundTwoOrder();
         for (int i = 0; i < numberOfPlayers; i++) {
             int playerIndex = reverseOrder[i];
             settlementsPerPlayer[playerIndex]++;
             roadsPerPlayer[playerIndex]++;
+
+            if (resources != null && resources[playerIndex] != null) {
+                for (String resource : resources[playerIndex]) {
+                    playerResources[playerIndex].merge(
+                            resource, 1, Integer::sum);
+                }
+            }
         }
     }
 
@@ -90,6 +110,18 @@ public class Game {
             reverse[i] = turnOrder[numberOfPlayers - 1 - i];
         }
         return reverse;
+    }
+
+    public int getTotalResources(int playerIndex) {
+        int total = 0;
+        for (int count : playerResources[playerIndex].values()) {
+            total += count;
+        }
+        return total;
+    }
+
+    public int getResourceCount(int playerIndex, String resource) {
+        return playerResources[playerIndex].getOrDefault(resource, 0);
     }
 
     public int getCurrentPlayerIndex() {
