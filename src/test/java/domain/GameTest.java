@@ -128,6 +128,43 @@ public class GameTest {
         }
     }
 
+    // TC13 – Players receive resources only from second settlement
+    @Test
+    public void testPlayersReceiveResourcesFromSecondSettlementOnly() {
+        int[] rolls = {7, 5, 3}; // player 0 first, order [0,1,2]
+        Game game = new Game(3, stubDiceRoller(rolls));
+
+        game.executeSetupRoundOne();
+
+        // After round one, no player has any resources
+        for (int i = 0; i < 3; i++) {
+            assertEquals(0, game.getTotalResources(i));
+        }
+
+        // Round two: stub what resources each player's second settlement borders
+        // Round two order is [2, 1, 0] (reverse)
+        // Player 2 gets ORE, BRICK
+        // Player 1 gets WHEAT
+        // Player 0 gets WOOL, WOOD
+        String[][] roundTwoResources = {
+                {"WOOL", "WOOD"},   // player 0
+                {"WHEAT"},          // player 1
+                {"ORE", "BRICK"}   // player 2
+        };
+        game.executeSetupRoundTwo(roundTwoResources);
+
+        assertEquals(2, game.getTotalResources(0));
+        assertEquals(1, game.getResourceCount(0, "WOOL"));
+        assertEquals(1, game.getResourceCount(0, "WOOD"));
+
+        assertEquals(1, game.getTotalResources(1));
+        assertEquals(1, game.getResourceCount(1, "WHEAT"));
+
+        assertEquals(2, game.getTotalResources(2));
+        assertEquals(1, game.getResourceCount(2, "ORE"));
+        assertEquals(1, game.getResourceCount(2, "BRICK"));
+    }
+
     // TC14 – Starting player begins main game after setup
     @Test
     public void testStartingPlayerBeginsAfterSetup() {
